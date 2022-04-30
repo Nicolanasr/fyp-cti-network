@@ -14,6 +14,9 @@ module.exports = {
                 }
             }
         },
+        fontSize: {
+            'xss': '.6rem',
+        }
     },
     plugins: [],
 }

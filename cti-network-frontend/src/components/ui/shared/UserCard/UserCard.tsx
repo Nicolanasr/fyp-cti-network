@@ -27,9 +27,11 @@ const UserCard = ({ name, profileUrl, isVerified, profilePic, susbscribers }: Pr
                 {/* profile name */}
                 <div className="w-fit m-auto mt-2 text-xs lg:text-sm group">
                     <Link href={profileUrl}>
-                        <a>
-                            <span className="transition-all font-medium group-hover:text-secondary-100 group-hover:underline">{name}</span>
-                            {isVerified && <span className="ml-2">V</span>}
+                        <a className="flex items-center">
+                            <span className="transition-all font-medium group-hover:text-secondary-100 group-hover:underline" style={{ paddingTop: "3px" }}>{name}</span>
+                            {isVerified && <span className="ml-2 flex" title="trusted">
+                                <Image src="/images/verified.png" layout="fixed" height={15} width={15} objectFit="contain" alt="verified" />
+                            </span>}
                         </a>
                     </Link>
                 </div>

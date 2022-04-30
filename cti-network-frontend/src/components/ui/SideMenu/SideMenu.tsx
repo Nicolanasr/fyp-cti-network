@@ -38,7 +38,7 @@ const SideMenu = (props: Props) => {
 
 
             {/* Aside bottom */}
-            <nav className="flex-1 w-full bg-slate-100 p-2 py-4 lg:p-12 lg:pt-32 ">
+            <nav className="flex-1 w-full bg-slate-100 p-2 py-4 lg:p-12 lg:pt-40 ">
                 {/* Menu */}
                 <ul className="p-0 m-0 list-none flex flex-col items-center lg:items-start gap-4">
                     <li>
