@@ -31,7 +31,7 @@ const SideMenu = (props: Props) => {
                 {/* User card */}
                 <div className="mt-8">
                     {
-                        isLoggedIn && <UserCard name="Nicolas" profileUrl="/user/nicolas" isVerified={true} susbscribers={10} profilePic="/images/profile-img-placeholder.png" />
+                        isLoggedIn && <UserCard name="John Doe" profileUrl="/user/john-doe" isVerified={true} susbscribers={10} profilePic="/images/profile-img-placeholder.png" />
                     }
                 </div>
             </div>
