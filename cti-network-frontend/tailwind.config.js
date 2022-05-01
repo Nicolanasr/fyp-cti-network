@@ -12,11 +12,11 @@ module.exports = {
                 secondary: {
                     100: "#e91e63"
                 }
+            },
+            fontSize: {
+                'xss': '.6rem',
             }
         },
-        fontSize: {
-            'xss': '.6rem',
-        }
     },
     plugins: [],
 }

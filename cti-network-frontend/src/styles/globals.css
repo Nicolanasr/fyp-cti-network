@@ -16,10 +16,6 @@ a {
 	transition: color 300ms;
 }
 
-a:hover {
-	color: #e91e63;
-}
-
 * {
 	box-sizing: border-box;
 }

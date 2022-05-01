@@ -2,11 +2,46 @@ import React from 'react'
 import Image from "next/image"
 import Link from "next/link"
 
+import Dropdown from "../shared/Dropdown/Dropdown"
+
 type Props = {}
+
+const dropdownItems: {
+    text: string,
+    url: string,
+    icon?: string
+}[] = [
+        {
+            text: "Timeline",
+            url: "/home",
+        },
+        {
+            text: "Profile",
+            url: "/manage/profile",
+        },
+        {
+            text: "Notifications",
+            url: "/manage/notifications",
+        },
+        {
+            text: "Messages",
+            url: "/manage/messages",
+        },
+        {
+            text: "Settings",
+            url: "/manage/settings",
+        },
+        {
+            text: "Logout",
+            url: "/authenticate/logout",
+            icon: "/svg/box-arrow-left.svg"
+        },
+    ]
+
 
 const TopMenu = (props: Props) => {
     return (
-        <header className="flex justify-between items-center sticky top-0 left-0 right-0 p-4 px-6 bg-white border-b shadow-sm">
+        <header className="flex justify-between items-center sticky top-0 left-0 right-0 p-4 px-6 bg-white border-b shadow-sm z-50">
             <div className="w-full max-w-xl " >
                 <form className="flex items-center">
                     <label htmlFor="search">
@@ -17,60 +52,49 @@ const TopMenu = (props: Props) => {
             </div>
             <div className="flex items-center gap-3">
                 {/* notifications */}
-                <Link href="/manage/notifications">
-                    <a className="bg-gray-50 h-8 w-8 rounded-full flex items-center justify-center relative">
-                        <Image src="/svg/bell.svg" layout="fixed" height="16" width="16" objectFit='contain' alt="notifications" />
-                        {/* unread */}
-                        <span className="absolute -top-1 right-0 text-xss h-4 w-4 rounded-full flex items-center justify-center bg-primary-100  text-white p-1"  >1</span>
-                    </a>
-                </Link>
+                <MenuIcon href="/manage/notifications" icon="/svg/bell.svg" number={3} />
                 {/* messages */}
-                <Link href="/messages">
-                    <a className="bg-gray-50 h-8 w-8 rounded-full  flex items-center justify-center relative">
-                        <Image src="/svg/envelope.svg" layout="fixed" height="16" width="16" objectFit='contain' alt="notifications" />
-                        <span className="absolute -top-1 right-0 text-xss h-4 w-4 rounded-full flex items-center justify-center bg-primary-100  text-white p-1"  >3</span>
-                    </a>
-                </Link>
-                <button tabIndex={0} className="bg-gray-50 h-8 w-8 rounded-full  flex items-center justify-center relative cursor-pointer group">
-                    <Image src="/images/profile-img-placeholder.png" layout="fixed" height="16" width="16" objectFit='cover' alt="profile" />
-                    <div className="absolute top-full right-0 w-36 mt-3 text-left bg-white shadow-xl hidden group-focus-within:block">
-                        <div className="border-b py-2 px-6">
-                            <Link href="#">
-                                <a>Timeline</a>
-                            </Link>
-                        </div>
-                        <div className="border-b py-2 px-6">
-                            <Link href="#">
-                                <a>Profile</a>
-                            </Link>
-                        </div>
-                        <div className="border-b py-2 px-6">
-                            <Link href="#">
-                                <a>Notifications</a>
-                            </Link>
-                        </div>
-                        <div className="border-b py-2 px-6">
-                            <Link href="#">
-                                <a>Messages</a>
-                            </Link>
-                        </div>
-                        <div className="border-b py-2 px-6">
-                            <Link href="#">
-                                <a>Settings</a>
-                            </Link>
-                        </div>
-                        <div className=" py-2 px-2">
-                            <Link href="#">
-                                <a className="flex items-center gap-2">
-                                    <Image src="/svg/box-arrow-left.svg" layout="fixed" height={15} width={15} alt="logout" />
-                                    Logout</a>
-                            </Link>
-                        </div>
-                    </div>
-                </button>
+                <MenuIcon href="/manage/messages" icon="/svg/envelope.svg" number={0} />
+
+                <Dropdown image="/images/profile-img-placeholder.png">
+                    {
+                        dropdownItems.map((item, index) => (
+                            <div key={item.text + index} className={`${(index === dropdownItems.length - 1) ? "" : "border"}  py-2 px-4`}>
+                                <Link href={item.url}>
+                                    {
+                                        item.icon ?
+                                            <a className="flex items-center gap-2">
+                                                <Image src={item.icon} layout="fixed" height={15} width={15} alt={item.text} />
+                                                {item.text}</a>
+                                            :
+                                            <a>{item.text}</a>
+                                    }
+                                </Link>
+                            </div>
+                        ))
+                    }
+                </Dropdown>
             </div>
         </header>
     )
 }
 
 export default TopMenu
+
+const MenuIcon = ({ href, icon, number }: { href: string, icon: string, number: number }) => {
+    return (
+        <Link href={href}>
+            <a className="bg-gray-50 h-8 w-8 rounded-full flex items-center justify-center relative">
+                <Image src={icon} layout="fixed" height="16" width="16" objectFit='contain' alt="notifications" />
+                {/* unread */}
+                {
+                    number > 0 && (
+                        <span className="absolute -top-1 right-0 text-xss h-4 w-4 rounded-full flex items-center justify-center bg-primary-100  text-white p-1">
+                            {number}
+                        </span>
+
+                    )}
+            </a>
+        </Link>
+    )
+}
