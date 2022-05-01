@@ -33,28 +33,35 @@ const Post = ({ author_name, author_pic, id, post_url, posted_date, text, commen
     }
 
     return (
-        <div className="flex w-full max-w-3xl">
-            <div className="w-10 h-10 relative rounded-full bg-slate-50 overflow-hidden">
+        <div className="flex w-full max-w-3xl flex-col sm:flex-row">
+            <div className="w-10 h-10 relative rounded-full bg-gray-50/[0.5] overflow-hidden">
                 <Link href={`/profile/${author_name}`}>
                     <a>
-                        <Image src={author_pic} layout="fixed" height={40} width={40} objectFit="cover" alt={author_name} />
+                        <Image src={author_pic} layout="fill" height={40} width={40} objectFit="cover" alt={author_name} />
                     </a>
                 </Link>
             </div>
-            <div className="flex-1 mx-4 ">
+            <div className="flex-1 mt-1 sm:mt-0 sm:mx-4">
                 {/* <Link href={post_url} >
                     <a > */}
                 {/* post header part */}
-                <div className="h-10">
-                    <div className="mb-1">
-                        <Link href={`/profile/${author_name}`}>
-                            <a className="font-semibold">{author_name} </a>
-                        </Link>
-                        <span> has posted an update.</span>
+                <div className="h-10 flex justify-between">
+                    <div>
+                        <div className="mb-1">
+                            <Link href={`/profile/${author_name}`}>
+                                <a className="font-semibold">{author_name} </a>
+                            </Link>
+                            <span> has posted an update.</span>
+                        </div>
+                        <div className="text-gray-500 text-xs">
+                            {timeSince(posted_date)}
+                        </div>
                     </div>
-                    <div className="text-gray-500 text-xs">
-                        {timeSince(posted_date)}
-                    </div>
+                    <button>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
+                        </svg>
+                    </button>
                 </div>
                 {/* post content */}
                 <div className="w-full ">
@@ -62,10 +69,10 @@ const Post = ({ author_name, author_pic, id, post_url, posted_date, text, commen
                         {
                             text.length > 170 && !readMoreText ?
                                 <>
-                                    {text.substring(0, 170) + " "}
+                                    {text.substring(0, 170) + "... "}
                                     <button className="text-secondary-100 z-10"
                                         onClick={() => setReadMoreText(true)}>
-                                        read more...
+                                        read more
                                     </button>
                                 </>
                                 : text
@@ -73,12 +80,12 @@ const Post = ({ author_name, author_pic, id, post_url, posted_date, text, commen
                     </p>
                     {
                         images && images.length > 0 &&
-                        <div className={`aspect-square max-w-xl my-2 grid gap-1 ${images.length === 1 ? "grid-cols-1" : images.length >= 2 ? "grid-cols-2" : ""}`}>
+                        <div className={`aspect-square max-w-xl my-2 grid gap-1 rounded-xl shadow overflow-hidden ${images.length === 1 ? "grid-cols-1" : images.length >= 2 ? "grid-cols-2" : ""}`}>
                             {
                                 images.map((image, img_index) => (
                                     img_index < 4 &&
                                     <div key={image + img_index} className="h-full w-full relative">
-                                        <Image src={image} layout="responsive" height={100} width={100} objectFit="cover" objectPosition="center" alt={"post image " + image} />
+                                        <Image src={image} layout="fill" objectFit="cover" objectPosition="center" alt={"post image " + image} />
                                     </div>
                                 ))
                             }

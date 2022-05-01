@@ -4,7 +4,9 @@ import Link from "next/link"
 
 import Dropdown from "../shared/Dropdown/Dropdown"
 
-type Props = {}
+type Props = {
+    toggleSideMenu: () => void
+}
 
 const dropdownItems: {
     text: string,
@@ -39,9 +41,14 @@ const dropdownItems: {
     ]
 
 
-const TopMenu = (props: Props) => {
+const TopMenu = ({ toggleSideMenu }: Props) => {
     return (
-        <header className="flex justify-between items-center sticky top-0 left-0 right-0 p-4 px-6 bg-white border-b shadow-sm z-50">
+        <header className="flex justify-between items-center sticky top-0 left-0 right-0 p-4 md:px-6 bg-white border-b shadow-sm z-40">
+            <button onClick={() => toggleSideMenu()} className="mr-2 lg:mr-4 lg:mx-0 lg:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path fillRule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z" />
+                </svg>
+            </button>
             <div className="w-full max-w-xl " >
                 <form className="flex items-center">
                     <label htmlFor="search">

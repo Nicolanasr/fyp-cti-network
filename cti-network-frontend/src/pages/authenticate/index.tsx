@@ -21,7 +21,7 @@ const Login: NextPage = (props: Props) => {
     return (
         <div className="min-h-screen w-full bg-primary-100 flex flex-col-reverse lg:flex-row">
             <div className="py-10 px-2 md:px-5 lg:px-10 flex-1 flex items-center justify-center lg:overflow-auto">
-                <div className="h-fit w-fit m-auto text-center text-slate-100">
+                <div className="h-fit w-fit m-auto text-center text-gray-50">
                     <div className="text-center">
                         <h1 className="text-3xl">Don{"'"}t miss on any new cyber threat</h1>
                         <h2 className='text-lg my-2'>Join CTI Network now</h2>

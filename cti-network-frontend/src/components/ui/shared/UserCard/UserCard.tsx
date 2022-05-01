@@ -14,7 +14,7 @@ const UserCard = ({ name, profileUrl, isVerified, profilePic, susbscribers }: Pr
     return (
         <div className="h-fit w-full max-w-sm relative">
             {/* front card */}
-            <div className="lg:h-full w-full m-auto p-1 py-4 lg:p-7 bg-white lg:rounded-2xl shadow-md relative z-10">
+            <div className="h-full w-full m-auto p-7 bg-white rounded-2xl shadow-md relative z-10">
                 {/* profile image */}
                 <div className="h-10 w-10 lg:h-16 lg:w-16 p-3 m-auto border rounded-full overflow-hidden flex justify-center items-center">
                     <Link href={profileUrl}>
@@ -25,7 +25,7 @@ const UserCard = ({ name, profileUrl, isVerified, profilePic, susbscribers }: Pr
                 </div>
 
                 {/* profile name */}
-                <div className="w-fit m-auto mt-2 text-xs lg:text-sm group">
+                <div className="w-fit m-auto mt-2 text-sm group">
                     <Link href={profileUrl}>
                         <a className="flex items-center">
                             <span className="transition-all font-medium group-hover:text-secondary-100 group-hover:underline" style={{ paddingTop: "3px" }}>{name}</span>
@@ -39,19 +39,19 @@ const UserCard = ({ name, profileUrl, isVerified, profilePic, susbscribers }: Pr
                     Member
                 </div>
 
-                <div className="my-4 hidden lg:block">
+                <div className="my-4 block">
                     <hr />
                 </div>
 
                 {/* subscribers */}
-                <div className="w-fit m-auto text-center hidden lg:block ">
+                <div className="w-fit m-auto text-center block ">
                     <span className="text-base font-medium text-gray-700">{susbscribers}</span> <br />
                     <div className="text-xs text-gray-400">Subscribers</div>
                 </div>
             </div>
 
             {/* back card */}
-            <div className="w-11/12 h-full mx-auto bg-gray-50 hidden lg:block rounded-2xl shadow-md absolute top-4 bottom-0 left-0 right-0 z-0"></div>
+            <div className="w-11/12 h-full mx-auto bg-gray-50 block rounded-2xl shadow-md absolute top-4 bottom-0 left-0 right-0 z-0"></div>
         </div>
     )
 }
