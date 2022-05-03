@@ -8,6 +8,8 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+// import { verifyToken } from "./src/Middlewares/verifyToken";
 const app = (0, express_1.default)();
 dotenv_1.default.config();
 const port = process.env.PORT;
@@ -15,6 +17,7 @@ const db = process.env.MONGO_URI;
 app.use(body_parser_1.default.urlencoded({ extended: false }));
 app.use(body_parser_1.default.json());
 app.use(cors({ credentials: true, origin: ["http://localhost:3000", "https://fyp-cti-network.vercel.app"] }));
+app.use(cookieParser());
 var usersRouter = require("./src/Routes/users.routes");
 app.use("/user", usersRouter);
 // catch 404 and forward to error handler
