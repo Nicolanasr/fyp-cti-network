@@ -68,6 +68,7 @@ const signin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                             }
                             res.cookie("token", jwtToken, {
                                 expires: new Date(Date.now() + (process.env.tokenExp ? parseInt(process.env.tokenExp) : 604800) * 1000),
+                                maxAge: process.env.tokenExp ? parseInt(process.env.tokenExp) : 604800,
                                 secure: true,
                                 httpOnly: true,
                                 sameSite: "none",
