@@ -93,6 +93,10 @@ const signin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.signin = signin;
+const logout = (req, res) => {
+    res.cookie("token", "", { expires: new Date(0) });
+    res.status(200).json({ success: true, message: "Successfully logged out" });
+};
 const isTokenValid = (req, res) => {
     res.status(200).json({ success: true, message: "Token Valid", data: req.body.user });
 };
@@ -118,6 +122,7 @@ const getUserInfo = (req, res) => {
 module.exports = {
     register: exports.register,
     signin: exports.signin,
+    logout,
     getUserInfo,
     isTokenValid,
 };

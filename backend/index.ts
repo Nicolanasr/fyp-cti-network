@@ -19,9 +19,6 @@ app.use(cors({ credentials: true, origin: ["http://localhost:3000", "https://fyp
 
 var usersRouter = require("./src/Routes/users.routes");
 app.use("/user", usersRouter);
-app.use("/", verifyToken, (req, res) => {
-	res.send("hello wolrd");
-});
 
 // catch 404 and forward to error handler
 app.use(function (_, res: Response, next) {

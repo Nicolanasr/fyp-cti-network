@@ -85,6 +85,11 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 	}
 };
 
+const logout = (req: Request, res: Response): void => {
+	res.cookie("token", "", { expires: new Date(0) });
+	res.status(200).json({ success: true, message: "Successfully logged out" });
+};
+
 const isTokenValid = (req: Request, res: Response): void => {
 	res.status(200).json({ success: true, message: "Token Valid", data: req.body.user });
 };
@@ -110,6 +115,7 @@ const getUserInfo = (req: Request, res: Response): void => {
 module.exports = {
 	register,
 	signin,
+	logout,
 	getUserInfo,
 	isTokenValid,
 };

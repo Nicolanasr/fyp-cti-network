@@ -11,6 +11,7 @@ router.get("/", (_, res: Response) => {
 
 router.post("/register", userControllers.register);
 router.post("/signin", userControllers.signin);
+router.get("/logout", userControllers.logout);
 router.get("/verify_token", verifyToken, userControllers.isTokenValid);
 router.get("/:id", userControllers.getUserInfo);
 
