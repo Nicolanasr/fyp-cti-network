@@ -20,6 +20,7 @@ const Login: NextPage = (props: Props) => {
 
     useEffect(() => {
         user.authState ? router.push("/home") : "";
+
     }, [user, router])
 
 
