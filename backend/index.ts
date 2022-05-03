@@ -3,19 +3,21 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 
+const cors = require("cors");
+
 import { verifyToken } from "./src/Middlewares/verifyToken";
 
 const app: Express = express();
 
 dotenv.config();
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
-var usersRouter = require("./src/Routes/users.routes");
-
 const port = process.env.PORT;
 const db = process.env.MONGO_URI;
 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+
+var usersRouter = require("./src/Routes/users.routes");
 app.use("/user", usersRouter);
 app.use("/", verifyToken, (req, res) => {
 	res.send("hello wolrd");

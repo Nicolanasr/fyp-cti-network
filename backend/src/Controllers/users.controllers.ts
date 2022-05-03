@@ -3,8 +3,6 @@ import { Request, Response } from "express";
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-import { verifyToken } from "../Middlewares/verifyToken";
-
 import { User } from "../Models/user.model";
 
 export const register = async (req: Request, res: Response): Promise<void> => {
@@ -13,6 +11,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 		user.first_name = req.body?.first_name;
 		user.last_name = req.body?.last_name;
 		user.email = req.body?.email;
+		user.username = req.body?.username;
+
 		if (req.body?.password?.length < 8) {
 			res.status(400).json({ success: false, message: "password must be >= 8 characters" });
 			return;
@@ -24,8 +24,14 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 				res.status(201).json({ success: true, message: "User created successfully" });
 			})
 			.catch((err) => {
-				const errorMessage: string = JSON.parse(JSON.stringify(err.message));
-				res.status(400).json({ success: false, message: errorMessage });
+				console.log(err);
+				console.log(err.keyValue);
+				if (err.code === 11000) {
+					res.status(400).json({ success: false, message: `already exist`, data: err.keyValue });
+				} else {
+					const errorMessage: string = JSON.parse(JSON.stringify(err.message));
+					res.status(400).json({ success: false, message: errorMessage });
+				}
 			});
 	} catch (err) {
 		res.status(500).json({ success: false, message: `server error -- ${err}` });
@@ -59,7 +65,7 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 										secure: false,
 										httpOnly: true,
 									});
-									res.status(200).json({ success: true, token: jwtToken });
+									res.status(200).json({ success: true, data: existUser });
 								}
 							);
 						} else {
@@ -76,6 +82,10 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 	} catch (err) {
 		res.status(500).json({ success: false, message: `server error -- ${err}` });
 	}
+};
+
+const isTokenValid = (req: Request, res: Response): void => {
+	res.status(200).json({ success: true, message: "Token Valid", data: req.body.user });
 };
 
 const getUserInfo = (req: Request, res: Response): void => {
@@ -100,4 +110,5 @@ module.exports = {
 	register,
 	signin,
 	getUserInfo,
+	isTokenValid,
 };

@@ -14,24 +14,32 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const user_model_1 = require("../Models/user.model");
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b, _c, _d, _e, _f, _g;
     try {
         const user = new user_model_1.User();
         user.first_name = (_a = req.body) === null || _a === void 0 ? void 0 : _a.first_name;
         user.last_name = (_b = req.body) === null || _b === void 0 ? void 0 : _b.last_name;
         user.email = (_c = req.body) === null || _c === void 0 ? void 0 : _c.email;
-        if (((_e = (_d = req.body) === null || _d === void 0 ? void 0 : _d.password) === null || _e === void 0 ? void 0 : _e.length) < 8) {
+        user.username = (_d = req.body) === null || _d === void 0 ? void 0 : _d.username;
+        if (((_f = (_e = req.body) === null || _e === void 0 ? void 0 : _e.password) === null || _f === void 0 ? void 0 : _f.length) < 8) {
             res.status(400).json({ success: false, message: "password must be >= 8 characters" });
             return;
         }
-        user.password = yield bcrypt.hash((_f = req.body) === null || _f === void 0 ? void 0 : _f.password, 10);
+        user.password = yield bcrypt.hash((_g = req.body) === null || _g === void 0 ? void 0 : _g.password, 10);
         user.save()
             .then(() => {
             res.status(201).json({ success: true, message: "User created successfully" });
         })
             .catch((err) => {
-            const errorMessage = JSON.parse(JSON.stringify(err.message));
-            res.status(400).json({ success: false, message: errorMessage });
+            console.log(err);
+            console.log(err.keyValue);
+            if (err.code === 11000) {
+                res.status(400).json({ success: false, message: `already exist`, data: err.keyValue });
+            }
+            else {
+                const errorMessage = JSON.parse(JSON.stringify(err.message));
+                res.status(400).json({ success: false, message: errorMessage });
+            }
         });
     }
     catch (err) {
@@ -40,10 +48,10 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.register = register;
 const signin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _g, _h;
+    var _h, _j;
     try {
-        const email = (_g = req.body) === null || _g === void 0 ? void 0 : _g.email;
-        const password = (_h = req.body) === null || _h === void 0 ? void 0 : _h.password;
+        const email = (_h = req.body) === null || _h === void 0 ? void 0 : _h.email;
+        const password = (_j = req.body) === null || _j === void 0 ? void 0 : _j.password;
         if (!email || !password) {
             res.status(400).json({ success: false, message: `email or password missing` });
             return;
@@ -63,7 +71,7 @@ const signin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                                 secure: false,
                                 httpOnly: true,
                             });
-                            res.status(200).json({ success: true, token: jwtToken });
+                            res.status(200).json({ success: true, data: existUser });
                         });
                     }
                     else {
@@ -84,6 +92,9 @@ const signin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.signin = signin;
+const isTokenValid = (req, res) => {
+    res.status(200).json({ success: true, message: "Token Valid", data: req.body.user });
+};
 const getUserInfo = (req, res) => {
     try {
         user_model_1.User.findById(req.params.id)
@@ -107,4 +118,5 @@ module.exports = {
     register: exports.register,
     signin: exports.signin,
     getUserInfo,
+    isTokenValid,
 };

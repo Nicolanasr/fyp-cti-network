@@ -15,6 +15,7 @@ interface IUser {
 	first_name: string;
 	last_name: string;
 	email: string;
+	username: string;
 	password: string;
 	avatar?: string;
 	is_verified: boolean;
@@ -24,7 +25,7 @@ interface IUser {
 
 const userSchema = new Schema<IUser>({
 	first_name: { type: String, required: true },
-	last_name: { type: String, required: true },
+	last_name: { type: String },
 	email: {
 		type: String,
 		trim: true,
@@ -34,6 +35,7 @@ const userSchema = new Schema<IUser>({
 		validate: [validateEmail, "Please fill a valid email address"],
 		match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, "Please fill a valid email address"],
 	},
+	username: { type: String, required: true, minlength: 4, unique: true },
 	password: {
 		type: String,
 		minlength: 8,
