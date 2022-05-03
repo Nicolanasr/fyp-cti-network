@@ -62,8 +62,9 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 									}
 									res.cookie("token", jwtToken, {
 										expires: new Date(Date.now() + (process.env.tokenExp ? parseInt(process.env.tokenExp) : 604800) * 1000), // time until expiration in ms
-										secure: false,
+										secure: true,
 										httpOnly: true,
+										sameSite: "none",
 									});
 									res.status(200).json({ success: true, data: existUser });
 								}
