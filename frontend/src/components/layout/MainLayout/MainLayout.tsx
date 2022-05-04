@@ -15,6 +15,7 @@ const MainLayout = ({ children }: Props) => {
     }
 
     return (
+
         <div className="">
             <SideMenu isOpen={sideMenuOpen} toggle={toggleSideMenu} />
             <div className="ml-0 lg:ml-80 relative">
