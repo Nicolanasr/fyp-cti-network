@@ -65,9 +65,8 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
                                         secure: true,
                                         httpOnly: true,
                                         sameSite: "none",
-                                    })
-                                        .status(200)
-                                        .json({ success: true, data: existUser, message: "test" });
+                                    });
+                                    res.status(200).json({ success: true, data: existUser });
                                 },
                             );
                         } else {
@@ -87,7 +86,8 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 };
 
 const logout = (req: Request, res: Response): void => {
-    res.clearCookie("token").status(200).json({ success: true, message: "Successfully logged out -1" });
+    res.cookie("token", "", { expires: new Date(0), secure: true, httpOnly: true, sameSite: "none" });
+    res.status(200).json({ success: true, message: "Successfully logged out" });
 };
 
 const isTokenValid = (req: Request, res: Response): void => {
