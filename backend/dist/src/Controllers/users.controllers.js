@@ -70,8 +70,8 @@ const signin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                                 expires: new Date(Date.now() + (process.env.tokenExp ? parseInt(process.env.tokenExp) : 604800) * 1000),
                                 secure: true,
                                 httpOnly: true,
-                                // sameSite: "none",
-                                // path: "/",
+                                sameSite: "none",
+                                path: "/",
                             });
                             res.status(200).json({ success: true, data: existUser });
                         });

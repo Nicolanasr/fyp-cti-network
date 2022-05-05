@@ -64,8 +64,8 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
                                         expires: new Date(Date.now() + (process.env.tokenExp ? parseInt(process.env.tokenExp) : 604800) * 1000), // time until expiration in ms
                                         secure: true,
                                         httpOnly: true,
-                                        // sameSite: "none",
-                                        // path: "/",
+                                        sameSite: "none",
+                                        path: "/",
                                     });
                                     res.status(200).json({ success: true, data: existUser });
                                 },
