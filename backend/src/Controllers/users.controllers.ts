@@ -64,6 +64,7 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 										expires: new Date(Date.now() + (process.env.tokenExp ? parseInt(process.env.tokenExp) : 604800) * 1000), // time until expiration in ms
 										secure: true,
 										// httpOnly: true,
+										domain: "fyp-cti-network.vercel.app",
 										sameSite: "none",
 										path: "/",
 									});

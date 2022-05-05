@@ -70,6 +70,7 @@ const signin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                                 expires: new Date(Date.now() + (process.env.tokenExp ? parseInt(process.env.tokenExp) : 604800) * 1000),
                                 secure: true,
                                 // httpOnly: true,
+                                domain: "fyp-cti-network.vercel.app",
                                 sameSite: "none",
                                 path: "/",
                             });
