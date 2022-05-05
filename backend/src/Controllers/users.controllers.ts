@@ -65,6 +65,7 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
                                         secure: true,
                                         httpOnly: true,
                                         sameSite: "none",
+                                        path: "/",
                                     });
                                     res.status(200).json({ success: true, data: existUser });
                                 },
@@ -86,7 +87,7 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 };
 
 const logout = (req: Request, res: Response): void => {
-    res.cookie("token", "", { expires: new Date(0), secure: true, httpOnly: true, sameSite: "none" });
+    res.cookie("token", "", { expires: new Date(0), secure: true, httpOnly: true, sameSite: "none", path: "/" });
     res.status(200).json({ success: true, message: "Successfully logged out" });
 };
 
