@@ -10,14 +10,9 @@ const Logout = () => {
     useEffect(() => {
         const logout = async () => {
             try {
-                await axios({
-                    url: `/user/logout`,
-                    method: "GET",
-                    withCredentials: true
-                }).then(() => {
-                    user.setAuthState(false)
-                    Router.replace("/");
-                });
+                document.cookie = `token=`;
+                user.setAuthState(false)
+                Router.replace("/");
             } catch (e) {
                 console.error(e);
             }

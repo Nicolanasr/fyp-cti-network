@@ -13,7 +13,7 @@ const Dropdown = ({ children, image }: Props) => {
                 image &&
                 <Image src={image} layout="fixed" height="16" width="16" objectFit='cover' alt={image} />
             }
-            <div className="absolute top-full right-0 w-36 mt-3 text-left bg-white shadow-xl hidden group-focus-within:block">
+            <div className="absolute top-full right-0 w-36 mt-3 text-left bg-white shadow-xl hidden group-focus:block">
                 {children}
             </div>
         </button>

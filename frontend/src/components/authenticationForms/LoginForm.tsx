@@ -35,12 +35,12 @@ const LoginForm = ({ onSubmit }: Props) => {
     return (
         <form onSubmit={handleSubmit(onFormSubmit)}>
             <div className="my-4">
-                <input {...register("email")} type="text" placeholder="E-mail *" className="rounded-full w-full h-10  px-6 border-none text-black focus:outline-none" />
+                <input value={"nasr528@gmail.com"} {...register("email")} type="text" placeholder="E-mail *" className="rounded-full w-full h-10  px-6 border-none text-black focus:outline-none" />
                 <p className="text-red-600 text-sm text-left mx-4 my-2">{errors.email?.message}</p>
             </div>
 
             <div className="my-4">
-                <input {...register("password")} type="Password" placeholder="Password *" className="rounded-full w-full h-10  px-6 border-none text-black focus:outline-none" />
+                <input value="nicolas12" {...register("password")} type="Password" placeholder="Password *" className="rounded-full w-full h-10  px-6 border-none text-black focus:outline-none" />
                 <p className="text-red-600 text-sm text-left mx-4 my-2">{errors.password?.message}</p>
             </div>
 
