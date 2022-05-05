@@ -46,7 +46,7 @@ const LoginForm = ({ onSubmit }: Props) => {
 
             <div className="w-full flex justify-between">
                 <div>
-                    <input {...register("remember")} type="checkbox" id="remember" />
+                    <input defaultChecked={true} {...register("remember")} type="checkbox" id="remember" />
                     <label className="mx-1" htmlFor="remember">Remember me</label>
                 </div>
                 <div>
