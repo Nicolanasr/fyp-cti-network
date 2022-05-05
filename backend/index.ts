@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 import bodyParser from "body-parser";
 
 const cors = require("cors");
-const cookieParser = require("cookie-parser");
 
 // import { verifyToken } from "./src/Middlewares/verifyToken";
 
@@ -17,8 +16,6 @@ const db = process.env.MONGO_URI;
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors({ credentials: true, origin: ["http://localhost:3000", "https://fyp-cti-network.vercel.app"] }));
-
-app.use(cookieParser());
 
 var usersRouter = require("./src/Routes/users.routes");
 app.use("/user", usersRouter);
