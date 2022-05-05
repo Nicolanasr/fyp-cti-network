@@ -87,7 +87,7 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 };
 
 const logout = (req: Request, res: Response): void => {
-    res.clearCookie("token").status(200).json({ success: true, message: "Successfully logged out - 1" });
+    res.clearCookie("token").status(200).json({ success: true, message: "Successfully logged out -1" });
 };
 
 const isTokenValid = (req: Request, res: Response): void => {
