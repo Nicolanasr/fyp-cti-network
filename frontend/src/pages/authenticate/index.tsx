@@ -32,7 +32,9 @@ const Login: NextPage = (props: Props) => {
                 data: postedData,
                 withCredentials: true
             }).then((res) => {
-                document.cookie = `token=${res.data?.tokens?.token}; SameSite= None; Secure=true; expires=${new Date(res.data?.tokens?.expires)}; `;
+                if (postedData.remember) {
+                    document.cookie = `token=${res.data?.tokens?.token}; SameSite= None; Secure=true; expires=${new Date(res.data?.tokens?.expires)}; `;
+                }
                 user.setAuthState(res.data.data)
                 router.push("/home");
             });

@@ -4,12 +4,10 @@ const jwt = require("jsonwebtoken");
 
 export const verifyToken = (req: Request, res: Response, next: NextFunction): void => {
 	const authHeader: string | undefined = req.headers.authorization;
-	const cookieToken = req.headers.cookie?.split("=")[1];
 
-	if (cookieToken || authHeader) {
+	if (authHeader) {
 		let token;
-		if (cookieToken) token = cookieToken;
-		else if (authHeader) token = authHeader.split(" ")[1];
+		token = authHeader.split(" ")[1];
 
 		jwt.verify(token, process.env.jwtSecret, (err: any, user: any) => {
 			if (err) {
