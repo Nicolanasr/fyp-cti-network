@@ -60,15 +60,21 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 										res.status(500).json({ success: false, message: `jwt error -- ${jwtErr}` });
 										return;
 									}
-									res.cookie("token", jwtToken, {
-										expires: new Date(Date.now() + (process.env.tokenExp ? parseInt(process.env.tokenExp) : 604800) * 1000), // time until expiration in ms
-										secure: true,
-										// httpOnly: true,
-										domain: "fyp-cti-network.vercel.app",
-										sameSite: "none",
-										path: "/",
+									// res.cookie("token", jwtToken, {
+									// 	expires: new Date(Date.now() + (process.env.tokenExp ? parseInt(process.env.tokenExp) : 604800) * 1000), // time until expiration in ms
+									// 	secure: true,
+									// 	httpOnly: true,
+									// 	sameSite: "none",
+									// 	path: "/",
+									// });
+									res.status(200).json({
+										success: true,
+										data: existUser,
+										tokens: {
+											token: jwtToken,
+											expires: new Date(Date.now() + (process.env.tokenExp ? parseInt(process.env.tokenExp) : 604800) * 1000),
+										},
 									});
-									res.status(200).json({ success: true, data: existUser });
 								}
 							);
 						} else {
