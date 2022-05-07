@@ -1,93 +1,49 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 
-import Post, { PostType } from "../Post/Post"
+import axios from '../../utils/axios'
+import { getCookie } from '../../utils/functions'
+
+import Post from "../Post/Post"
+import { IPost } from '../../types/post'
 
 type Props = {
     children: React.ReactNode
 }
 
-const posts: PostType[] = [
-    {
-        id: Math.random(),
-        author_pic: "/images/cyber-background.jpg",
-        author_name: "John Doe",
-        posted_date: new Date("01-14-2022"),
-        text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus enim, facere culpa, nisi explicabo saepe architecto exercitationem, aspernatur unde voluptatibus quaerat labore. Nihil in laboriosam repellendus dolorem porro exercitationem dolor?  ",
-        post_url: "/post/1",
-        likes_count: 23,
-        comments: [
-            {
-                comment_author: "John Doe 2",
-                comment_text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. D",
-                posted_date: new Date(),
-                likes_count: 2
-            }
-        ]
-    },
-    {
-        id: Math.random(),
-        author_pic: "/images/collaboration.png",
-        author_name: "John Doe 2",
-        posted_date: new Date("10-14-2020"),
-        text: "Lorem ipsum dolor sit met consectetur adipisicing elit. Doloribus enim, facere culpa, nisi explicabo saepe architecto exercitationem, aspernatur unde voluptatibus quaerat labore. Nihil in laboriosam repellendus dolorem porro exercitationem dolor?   Lorem ipsum dolor sit met consectetur adipisicing elit. Doloribus enim, facere culpa, nisi explicabo saepe architecto exercitationem, aspernatur unde voluptatibus quaerat labore. Nihil in laboriosam repellendus dolorem porro exercitationem dolor?  ",
-        post_url: "/post/1",
-        likes_count: 3,
-        images: ["https://i.picsum.photos/id/5/1920/1920.jpg?hmac=GdRDq7onYZrtCOFaKhRsrUYa8BsL1FtWO544JT1K3Dc", "https://i.picsum.photos/id/905/1920/1920.jpg?hmac=6vJfYAWFeqwglaD_XoNuM8md6u7T8UEScbfL46HuN-4"]
-    },
-    {
-        id: Math.random(),
-        author_pic: "/images/cyber-background.jpg",
-        author_name: "John Doe",
-        posted_date: new Date("01-14-2022"),
-        text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus enim, facere culpa, nisi explicabo saepe architecto exercitationem, aspernatur unde voluptatibus quaerat labore. Nihil in laboriosam repellendus dolorem porro exercitationem dolor?  ",
-        post_url: "/post/1",
-        likes_count: 23,
-        comments: [
-            {
-                comment_author: "John Doe 2",
-                comment_text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. D",
-                posted_date: new Date(),
-                likes_count: 2
-            }
-        ]
-    },
-    {
-        id: Math.random(),
-        author_pic: "/images/cyber-background.jpg",
-        author_name: "John Doe",
-        posted_date: new Date("01-14-2022"),
-        text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus enim, facere culpa, nisi explicabo saepe architecto exercitationem, aspernatur unde voluptatibus quaerat labore. Nihil in laboriosam repellendus dolorem porro exercitationem dolor?  ",
-        post_url: "/post/1",
-        likes_count: 23,
-        comments: [
-            {
-                comment_author: "John Doe 2",
-                comment_text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. D",
-                posted_date: new Date(),
-                likes_count: 2
-            }
-        ]
-    },
-    {
-        id: Math.random(),
-        author_pic: "/images/collaboration.png",
-        author_name: "John Doe 2",
-        posted_date: new Date("10-14-2020"),
-        text: "Lorem ipsum dolor sit met consectetur adipisicing elit. Doloribus enim, facere culpa, nisi explicabo saepe architecto exercitationem, aspernatur unde voluptatibus quaerat labore. Nihil in laboriosam repellendus dolorem porro exercitationem dolor?   Lorem ipsum dolor sit met consectetur adipisicing elit. Doloribus enim, facere culpa, nisi explicabo saepe architecto exercitationem, aspernatur unde voluptatibus quaerat labore. Nihil in laboriosam repellendus dolorem porro exercitationem dolor?  ",
-        post_url: "/post/1",
-        likes_count: 3,
-        images: ["/images/profile-img-placeholder.png", "/images/profile-img-placeholder.png", "/images/profile-img-placeholder.png", "/images/profile-img-placeholder.png", "/images/profile-img-placeholder.png"]
-    }
-]
-
 const HomepageSection = (props: Props) => {
+    const [posts, setPosts] = useState<IPost[]>([])
+    console.log(posts);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                await axios({
+                    url: `/post/get_latest`,
+                    method: "GET",
+                    withCredentials: true,
+                    headers: {
+                        "Authorization": `Bearer ${getCookie("token")}`,
+                    },
+                }).then((res) => {
+                    if (res.data.success === true) {
+                        setPosts(res.data.data);
+                    }
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        }
+        fetchData()
+    }, [])
+
+
     return (
         <div className="w-full flex">
             <div className="h-full w-full md:w-8/12 pt-10 px-4 md:px-6 lg:pt-16 lg:px-12 xl:px-16">
                 {
                     posts.map((post, index) => (
-                        <div key={post.id}>
+                        <div key={post._id}>
                             <Post {...post} />
                             <hr className="my-8" />
                         </div>

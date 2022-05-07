@@ -13,7 +13,10 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction): vo
 			if (err) {
 				return res.status(403).json({ success: false, message: "Token invalid" });
 			}
-			req.body.user = user;
+			const user_data = JSON.parse(JSON.stringify(user));
+			user_data["password"] = undefined;
+			user_data["created_at"] = undefined;
+			req.body.user = user_data;
 			next();
 		});
 	} else {

@@ -31,8 +31,6 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             res.status(201).json({ success: true, message: "User created successfully" });
         })
             .catch((err) => {
-            console.log(err);
-            console.log(err.keyValue);
             if (err.code === 11000) {
                 res.status(400).json({ success: false, message: `already exist`, data: err.keyValue });
             }
@@ -73,9 +71,12 @@ const signin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                             // 	sameSite: "none",
                             // 	path: "/",
                             // });
+                            const user_data = JSON.parse(JSON.stringify(existUser));
+                            user_data["password"] = undefined;
+                            user_data["created_at"] = undefined;
                             res.status(200).json({
                                 success: true,
-                                data: existUser,
+                                data: user_data,
                                 tokens: {
                                     token: jwtToken,
                                     expires: new Date(Date.now() + (process.env.tokenExp ? parseInt(process.env.tokenExp) : 604800) * 1000),

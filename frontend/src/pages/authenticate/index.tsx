@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useContext } from 'react'
 import type { NextPage } from "next";
 import { NextRouter, useRouter } from "next/router"
 import Image from "next/image"
@@ -17,12 +17,6 @@ const Login: NextPage = (props: Props) => {
     const user = useContext(AuthContext);
 
     const [activeForm, setActiveForm] = useState<string>("login")
-
-    useEffect(() => {
-        user.authState ? router.push("/home") : "";
-
-    }, [user, router])
-
 
     const submitForm = async (postedData: any, type: "login" | "signup") => {
         try {

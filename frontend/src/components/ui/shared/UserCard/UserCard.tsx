@@ -2,15 +2,18 @@ import React from 'react'
 import Image from "next/image"
 import Link from "next/link"
 
+import { UserType } from "../../../../types/user"
+
 type Props = {
     name: string,
     profileUrl: string,
     isVerified: boolean,
-    profilePic: string,
-    susbscribers: number
+    profilePic?: string,
+    susbscribers: number,
+    userType: UserType
 }
 
-const UserCard = ({ name, profileUrl, isVerified, profilePic, susbscribers }: Props) => {
+const UserCard = ({ name, profileUrl, isVerified, profilePic = "/images/profile-img-placeholder.png", susbscribers, userType }: Props) => {
     return (
         <div className="h-fit w-full max-w-sm relative">
             {/* front card */}
@@ -28,15 +31,15 @@ const UserCard = ({ name, profileUrl, isVerified, profilePic, susbscribers }: Pr
                 <div className="w-fit m-auto mt-2 text-sm group">
                     <Link href={profileUrl}>
                         <a className="flex items-center">
-                            <span className="transition-all font-medium group-hover:text-secondary-100 group-hover:underline" style={{ paddingTop: "3px" }}>{name}</span>
+                            <span className="transition-all font-medium capitalize group-hover:text-secondary-100 group-hover:underline" style={{ paddingTop: "3px" }}>{name.toLowerCase()}</span>
                             {isVerified && <span className="ml-2 flex" title="trusted">
                                 <Image src="/images/verified.png" layout="fixed" height={15} width={15} objectFit="contain" alt="verified" />
                             </span>}
                         </a>
                     </Link>
                 </div>
-                <div className=" text-xs text-gray-400 text-center mt-1 mb-3">
-                    Member
+                <div className=" text-xs text-gray-400 text-center mt-1 mb-3 capitalize">
+                    {UserType[userType].toLowerCase()}
                 </div>
 
                 <div className="my-4 block">

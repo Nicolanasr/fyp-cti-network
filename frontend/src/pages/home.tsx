@@ -8,7 +8,6 @@ import HomepageSection from '../components/HomepageSection/HomepageSection';
 
 const Home: NextPage = () => {
     return <>
-
         <MainLayout>
             <HomepageSection>
             </HomepageSection>

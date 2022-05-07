@@ -17,7 +17,9 @@ app.use(body_parser_1.default.urlencoded({ extended: false }));
 app.use(body_parser_1.default.json());
 app.use(cors({ credentials: true, origin: ["http://localhost:3000", "http://127.0.0.1:3000", "https://fyp-cti-network.vercel.app"] }));
 var usersRouter = require("./src/Routes/users.routes");
+var postsRouter = require("./src/Routes/posts.routes");
 app.use("/user", usersRouter);
+app.use("/post", postsRouter);
 // catch 404 and forward to error handler
 app.use(function (_, res, next) {
     res.status(404).json({

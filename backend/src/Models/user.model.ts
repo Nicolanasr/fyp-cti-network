@@ -11,16 +11,16 @@ enum UserType {
 	OFFICIAL,
 }
 
-interface IUser {
-	first_name: string;
-	last_name: string;
-	email: string;
-	username: string;
-	password: string;
+export interface IUser {
+	first_name?: string;
+	last_name?: string;
+	email?: string;
+	username?: string;
+	password?: string;
 	avatar?: string;
-	is_verified: boolean;
-	user_type: UserType;
-	created_at: Date;
+	is_verified?: boolean;
+	user_type?: UserType;
+	created_at?: Date;
 }
 
 const userSchema = new Schema<IUser>({
