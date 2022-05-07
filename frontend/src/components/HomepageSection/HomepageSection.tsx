@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { FormEvent, useEffect, useState } from 'react'
 import Link from 'next/link'
 
 import axios from '../../utils/axios'
 import { getCookie } from '../../utils/functions'
 
-import Post from "../Post/Post"
 import { IPost } from '../../types/post'
+
+import Post from "../Post/Post"
+import NewPostForm from '../NewPostForm/NewPostForm'
 
 type Props = {
     children: React.ReactNode
@@ -13,7 +15,6 @@ type Props = {
 
 const HomepageSection = (props: Props) => {
     const [posts, setPosts] = useState<IPost[]>([])
-    console.log(posts);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -37,18 +38,47 @@ const HomepageSection = (props: Props) => {
         fetchData()
     }, [])
 
+    const handleNewPostForm = async (e: FormEvent, text: string | undefined, files: string[]) => {
+        e.preventDefault()
+        try {
+            await axios({
+                url: `/post/new`,
+                method: "POST",
+                data: {
+                    text: text,
+                    files: files
+                },
+                headers: {
+                    "Authorization": `Bearer ${getCookie("token")}`,
+                },
+            }).then((res) => {
+                if (res.data.success === true) {
+                    let tmp_posts = [...posts];
+                    tmp_posts.unshift(res.data.data);
+                    setPosts(tmp_posts);
+                }
+            });
+        } catch (e) {
+            console.error(e);
+        }
+    }
 
     return (
         <div className="w-full flex">
-            <div className="h-full w-full md:w-8/12 pt-10 px-4 md:px-6 lg:pt-16 lg:px-12 xl:px-16">
-                {
-                    posts.map((post, index) => (
-                        <div key={post._id}>
-                            <Post {...post} />
-                            <hr className="my-8" />
-                        </div>
-                    ))
-                }
+            <div className="h-full w-full md:w-8/12 px-4 md:px-6 lg:px-12 xl:px-16">
+                <div className="my-12">
+                    <NewPostForm handleFormSubmit={handleNewPostForm} />
+                </div>
+                <div className="mt-8">
+                    {
+                        posts.map((post, index) => (
+                            <div key={Math.random()}>
+                                <Post key={Math.random()} {...post} />
+                                <hr className="my-8" />
+                            </div>
+                        ))
+                    }
+                </div>
             </div>
             <div className="w-4/12 border-l hidden md:block pt-10 px-4 md:px-6 lg:pt-16 2xl:px-16 max-w-md mx-auto">
                 <div className="sticky top-20">

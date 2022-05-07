@@ -95,7 +95,14 @@ const Post = ({ _id, author, comments, created_at, images, likes, text, liked_by
                                         read more
                                     </button>
                                 </>
-                                : text
+                                : <>
+                                    {text}
+                                    <br />
+                                    <button className="text-secondary-100 z-10"
+                                        onClick={() => setReadMoreText(false)}>
+                                        show less
+                                    </button>
+                                </>
                         }
                     </p>
                     {
