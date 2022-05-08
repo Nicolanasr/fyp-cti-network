@@ -19,9 +19,9 @@ const UserCard = ({ name, profileUrl, isVerified, profilePic = "/images/profile-
             {/* front card */}
             <div className="h-full w-full m-auto p-7 bg-white rounded-2xl shadow-md relative z-10">
                 {/* profile image */}
-                <div className="h-10 w-10 lg:h-16 lg:w-16 p-3 m-auto border rounded-full overflow-hidden flex justify-center items-center">
+                <div className="h-10 w-10 lg:h-16 lg:w-16 m-auto border rounded-full overflow-hidden flex justify-center items-center">
                     <Link href={profileUrl}>
-                        <a className="block relative h-5 w-5 lg:h-10 lg:w-10">
+                        <a className="block relative h-14 w-14 rounded-full overflow-hidden">
                             <Image src={profilePic} layout="fill" objectFit="cover" objectPosition="center" alt="profile" />
                         </a>
                     </Link>

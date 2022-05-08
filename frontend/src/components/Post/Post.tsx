@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import Image from "next/image"
 import Link from "next/link"
-import { useRouter } from 'next/router'
 
 import axios from '../../utils/axios'
 import { getCookie } from '../../utils/functions'
@@ -19,8 +18,6 @@ export interface Comment {
 }
 
 const Post = ({ _id, author, comments, created_at, images, likes, text, liked_by_user, url }: IPost) => {
-    const router = useRouter();
-
     const [readMoreText, setReadMoreText] = useState<boolean>(false)
     const [userLiked, setUserLiked] = useState<{ liked: boolean, total_likes: number }>(
         {
