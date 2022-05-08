@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from 'next/router'
 
 import axios from '../../utils/axios'
 import { getCookie } from '../../utils/functions'
@@ -18,6 +19,8 @@ export interface Comment {
 }
 
 const Post = ({ _id, author, comments, created_at, images, likes, text, liked_by_user, url }: IPost) => {
+    const router = useRouter();
+
     const [readMoreText, setReadMoreText] = useState<boolean>(false)
     const [userLiked, setUserLiked] = useState<{ liked: boolean, total_likes: number }>(
         {
@@ -52,6 +55,11 @@ const Post = ({ _id, author, comments, created_at, images, likes, text, liked_by
         }
     }
 
+    const handleReadMore = () => {
+        setReadMoreText((p) => !p);
+        return false;
+    }
+
     return (
         <div className="flex w-full max-w-3xl flex-col sm:flex-row">
             <div className="w-10 h-10 relative rounded-full bg-gray-50/[0.5] overflow-hidden">
@@ -84,41 +92,55 @@ const Post = ({ _id, author, comments, created_at, images, likes, text, liked_by
                     </button>
                 </div>
                 {/* post content */}
-                <div className="w-full ">
+                <a
+                    href={`/post/${url}`}
+                    className="w-full cursor-pointer" >
                     <p className="my-4 whitespace-pre-wrap">
                         {
                             text && text.length > 170 && !readMoreText ?
                                 <>
                                     {text.substring(0, 170) + "... "}
-                                    <button className="text-secondary-100 z-10"
-                                        onClick={() => setReadMoreText(true)}>
+                                    <span className="text-secondary-100 z-10 cursor-pointer relative"
+                                        onClick={(e) => { handleReadMore(); e.preventDefault(); return false }}>
                                         read more
-                                    </button>
+                                    </span>
                                 </>
                                 : <>
                                     {text}
-                                    <br />
-                                    <button className="text-secondary-100 z-10"
-                                        onClick={() => setReadMoreText(false)}>
-                                        show less
-                                    </button>
+                                    {
+                                        text && text?.length > 170 &&
+                                        <>
+                                            <br />
+                                            <span className="text-secondary-100 z-10 cursor-pointer"
+                                                onClick={(e) => { handleReadMore(); e.preventDefault(); return false }}>
+                                                show less
+                                            </span>
+                                        </>
+                                    }
                                 </>
                         }
                     </p>
                     {
                         images && images.length > 0 &&
-                        <div className={`aspect-square max-w-xl my-2 grid gap-1 rounded-xl shadow overflow-hidden ${images.length === 1 ? "grid-cols-1" : images.length >= 2 ? "grid-cols-2" : ""}`}>
+                        <div className={`aspect-square max-w-xl my-2 grid gap-2 rounded-xl shadow overflow-hidden ${images.length === 1 ? "grid-cols-1" : images.length >= 2 ? "grid-cols-2" : ""}`}>
                             {
                                 images.map((image, img_index) => (
                                     img_index < 4 &&
                                     <div key={image + img_index} className="h-full w-full relative">
-                                        <Image src={image} layout="fill" objectFit="cover" objectPosition="center" alt={"post image " + image} />
+                                        {/*  eslint-disable-next-line @next/next/no-img-element */}
+                                        <img src={`${image}-/preview/-/quality/lightest/`} className="h-full w-full absolute top-0 bottom-0 left-0 right-0 object-cover" alt={"post image " + image} />
+                                        {
+                                            images.length > 4 && img_index === 3 && <div className="bg-black bg-opacity-50 text-white absolute top-0 bottom-0 left-0 right-0 z-10 flex items-center justify-center">
+                                                + {images.length - 4} more
+                                            </div>
+                                        }
                                     </div>
                                 ))
                             }
+
                         </div>
                     }
-                </div>
+                </a>
                 {/*</a >
                 </Link > */}
 

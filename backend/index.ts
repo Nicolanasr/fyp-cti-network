@@ -13,8 +13,8 @@ dotenv.config();
 const port = process.env.PORT;
 const db = process.env.MONGO_URI;
 
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors({ credentials: true, origin: ["http://localhost:3000", "http://127.0.0.1:3000", "https://fyp-cti-network.vercel.app"] }));
 
 var usersRouter = require("./src/Routes/users.routes");

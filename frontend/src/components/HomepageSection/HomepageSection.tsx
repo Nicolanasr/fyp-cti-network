@@ -38,16 +38,20 @@ const HomepageSection = (props: Props) => {
         fetchData()
     }, [])
 
-    const handleNewPostForm = async (e: FormEvent, text: string | undefined, files: string[]) => {
+    const handleNewPostForm = async (e: FormEvent, text: string | undefined, files: File[]) => {
+        console.log(files);
         e.preventDefault()
+        const data = new FormData();
+        data.append("text", text || "");
+        files.forEach(function (file, i) {
+            data.append("files[]", file);
+        });
+
         try {
             await axios({
                 url: `/post/new`,
                 method: "POST",
-                data: {
-                    text: text,
-                    files: files
-                },
+                data: data,
                 headers: {
                     "Authorization": `Bearer ${getCookie("token")}`,
                 },

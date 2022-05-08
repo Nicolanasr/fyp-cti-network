@@ -9,12 +9,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const upload_client_1 = require("@uploadcare/upload-client");
 const post_model_1 = require("../Models/post.model");
+const client = new upload_client_1.UploadClient({ publicKey: "73b34fb69e9fb0ddfed7" });
 const addNewPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
     try {
         const post = new post_model_1.Post();
-        // post.author_id = req.body?.user?._id;
         post.author = {
             _id: (_b = (_a = req.body) === null || _a === void 0 ? void 0 : _a.user) === null || _b === void 0 ? void 0 : _b._id,
             avatar: ((_d = (_c = req.body) === null || _c === void 0 ? void 0 : _c.user) === null || _d === void 0 ? void 0 : _d.avatar) || "",
@@ -23,11 +24,18 @@ const addNewPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             username: (_k = (_j = req.body) === null || _j === void 0 ? void 0 : _j.user) === null || _k === void 0 ? void 0 : _k.username,
         };
         post.text = ((_l = req.body) === null || _l === void 0 ? void 0 : _l.text) || "";
-        post.images = ((_m = req.body) === null || _m === void 0 ? void 0 : _m.images) || [];
-        let tmp_url;
+        const files = req.files;
+        const promises = files.map((fileData) => {
+            client.updateSettings({ publicKey: "73b34fb69e9fb0ddfed7", fileName: fileData.originalname });
+            return client.uploadFile(fileData.buffer).then((file) => file.cdnUrl);
+        });
+        const files_urls = yield Promise.all(promises);
+        post.images = files_urls || [];
+        let tmp_url = "";
         if (post.text) {
             tmp_url = post.text
                 .toLowerCase()
+                .substring(0, 70)
                 .replace(/ /g, "-")
                 .replace(/[^\w-]+/g, "");
         }
@@ -95,10 +103,10 @@ const getLastestPosts = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 const likePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _o, _p, _q;
+    var _m, _o, _p;
     try {
-        const post_id = (_o = req.body) === null || _o === void 0 ? void 0 : _o.post_id;
-        const user_id = (_q = (_p = req.body) === null || _p === void 0 ? void 0 : _p.user) === null || _q === void 0 ? void 0 : _q._id;
+        const post_id = (_m = req.body) === null || _m === void 0 ? void 0 : _m.post_id;
+        const user_id = (_p = (_o = req.body) === null || _o === void 0 ? void 0 : _o.user) === null || _p === void 0 ? void 0 : _p._id;
         post_model_1.Post.findOne({ _id: post_id })
             .then((post_res) => {
             var _a, _b, _c, _d, _e;

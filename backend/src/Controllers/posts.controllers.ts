@@ -1,15 +1,22 @@
 import { Request, response, Response } from "express";
+import { UploadClient } from "@uploadcare/upload-client";
 
 import { Post, IPost } from "../Models/post.model";
+import { MulterFile } from "../../types/multerFile";
 
 interface IPostData extends IPost {
 	liked_by_user: boolean;
 }
 
-const addNewPost = async (req: Request, res: Response): Promise<void> => {
+interface RequestFile extends Request {
+	files: MulterFile[];
+}
+
+const client = new UploadClient({ publicKey: "73b34fb69e9fb0ddfed7" });
+
+const addNewPost = async (req: RequestFile, res: Response): Promise<void> => {
 	try {
 		const post = new Post();
-		// post.author_id = req.body?.user?._id;
 		post.author = {
 			_id: req.body?.user?._id,
 			avatar: req.body?.user?.avatar || "",
@@ -18,12 +25,21 @@ const addNewPost = async (req: Request, res: Response): Promise<void> => {
 			username: req.body?.user?.username,
 		};
 		post.text = req.body?.text || "";
-		post.images = req.body?.images || [];
 
-		let tmp_url: string;
+		const files = req.files;
+
+		const promises = files.map((fileData) => {
+			client.updateSettings({ publicKey: "73b34fb69e9fb0ddfed7", fileName: fileData.originalname });
+			return client.uploadFile(fileData.buffer).then((file) => file.cdnUrl);
+		});
+		const files_urls: (string | null)[] = await Promise.all(promises);
+		post.images = (files_urls as string[]) || [];
+
+		let tmp_url: string = "";
 		if (post.text) {
 			tmp_url = post.text
 				.toLowerCase()
+				.substring(0, 70)
 				.replace(/ /g, "-")
 				.replace(/[^\w-]+/g, "");
 		} else {

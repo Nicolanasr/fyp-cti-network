@@ -2,59 +2,79 @@ import React, { useState, useRef, useContext, FormEvent, ChangeEvent } from 'rea
 import Image from "next/image"
 
 import { AuthContext } from "../../context/auth-context"
+import { formatSizeUnits } from '../../utils/functions'
+
 import Button from '../ui/shared/Button/Button'
 
 type Props = {
-    handleFormSubmit: (e: FormEvent, text: string | undefined, files: string[]) => void
+    handleFormSubmit: (e: FormEvent, text: string | undefined, files: File[]) => void
 }
+
+const readUploadedFileAsDataUrl = (inputFile: any) => {
+    const temporaryFileReader = new FileReader();
+
+    return new Promise((resolve, reject) => {
+        temporaryFileReader.onerror = () => {
+            temporaryFileReader.abort();
+            reject(new DOMException("Problem parsing input file."));
+        };
+
+        temporaryFileReader.onload = () => {
+            resolve(temporaryFileReader.result);
+        };
+        temporaryFileReader.readAsDataURL(inputFile);
+    });
+};
+
+const getImgUrl = async (file: File) => {
+    try {
+        const res = await readUploadedFileAsDataUrl(file)
+        return res;
+    } catch (e) {
+        console.error(e)
+    }
+}
+
 
 const NewPostForm = ({ handleFormSubmit }: Props) => {
     const userDetails = useContext(AuthContext).authState;
 
-    const [files, setFiles] = useState<File[]>([])
-    const [filePreview, setFilesPreview] = useState<{ url: string, name: string, size: number }[]>([])
+    const [files, setFiles] = useState<
+        {
+            files: File[],
+            preview: { url: string, name: string, size: number }[]
+        }
+    >({ files: [], preview: [] });
     const textRef = useRef<HTMLTextAreaElement | null>(null);
 
     const handleSubmit = async (e: FormEvent) => {
-        await handleFormSubmit(e, textRef.current?.value, [])
+        await handleFormSubmit(e, textRef.current?.value, files.files)
         if (textRef.current) {
             textRef.current.value = ""
         }
-        setFiles([]);
+        setFiles({ files: [], preview: [] });
+    }
+
+    const clearForm = () => {
+        if (textRef.current) {
+            textRef.current.value = ""
+        }
+        setFiles({ files: [], preview: [] })
     }
 
     const handleFileUpload = async (event: ChangeEvent<HTMLInputElement>) => {
         let target_files: File[] = Array.from(event.target.files || [])
 
-        const tmp_files: File[] = files;
-
-        if (tmp_files.length > 0) {
-            let more_tmp: File[] = []
-            for (let i = 0; i < target_files.length; i++) {
-                let inList = false;
-                for (let j = 0; j < tmp_files.length; j++) {
-                    if (tmp_files[j].name === target_files[i].name) {
-                        inList = true;
-                        break;
-                    }
-                }
-                if (!inList) {
-                    more_tmp.push(target_files[i])
-                }
+        const tmp_files: File[] = [...target_files, ...files.files].reduce((unique: File[], o: File) => {
+            if (!unique.some(obj => obj.name === o.name && obj.size === o.size && obj.lastModified === o.lastModified)) {
+                unique.push(o);
             }
-            tmp_files.push(...more_tmp);
+            return unique;
+        }, []);
 
-        } else {
-            target_files.forEach((file) => {
-                tmp_files.push(file)
-            })
-        }
-
-        setFiles(() => tmp_files);
-
-        let file_preview = []
+        let file_preview: { url: string, name: string, size: number }[] = []
         for (const file of tmp_files) {
-            const file_url = await displayImage(file)
+            const file_url = await getImgUrl(file)
             file_preview.push({
                 url: file_url as string,
                 name: file.name,
@@ -62,48 +82,22 @@ const NewPostForm = ({ handleFormSubmit }: Props) => {
             });
         }
 
-        setFilesPreview(file_preview)
-    }
-
-    const readUploadedFileAsDataUrl = (inputFile: any) => {
-        const temporaryFileReader = new FileReader();
-
-        return new Promise((resolve, reject) => {
-            temporaryFileReader.onerror = () => {
-                temporaryFileReader.abort();
-                reject(new DOMException("Problem parsing input file."));
-            };
-
-            temporaryFileReader.onload = () => {
-                resolve(temporaryFileReader.result);
-            };
-            temporaryFileReader.readAsDataURL(inputFile);
-        });
-    };
-
-    const displayImage = async (file: File) => {
-        try {
-            const res = await readUploadedFileAsDataUrl(file)
-            return res;
-        } catch (e) {
-            console.error(e)
-        }
+        setFiles({ files: tmp_files, preview: file_preview });
     }
 
     const removeImage = (index: number) => {
-        let tmp_files = files;
-        let tmp_previews = filePreview;
+        let tmp_files = files.files;
+        let tmp_previews = files.preview;
 
         tmp_files = tmp_files.filter((_, indexf) => indexf !== index)
         tmp_previews = tmp_previews.filter(((_, indexf) => indexf !== index))
 
-        setFiles(tmp_files);
-        setFilesPreview(tmp_previews)
+        setFiles({ files: tmp_files, preview: tmp_previews });
     }
 
     return (
         <div className="w-full p-10 rounded-xl" style={{ boxShadow: "0 20px 90px rgba(58,46,68,0.08)" }}>
-            <form onSubmit={(e) => handleSubmit(e)}>
+            <form onSubmit={(e) => handleSubmit(e)} >
                 {/* input area */}
                 <div className="flex border-b">
                     <div className="w-10 h-10 relative rounded-full bg-gray-50/[0.5] overflow-hidden">
@@ -122,11 +116,11 @@ const NewPostForm = ({ handleFormSubmit }: Props) => {
                         </svg>
                         <div className="mx-2">Attach media</div>
                     </label>
-                    <input onChange={handleFileUpload} type="file" id="files" name="files" className="hidden" multiple />
+                    <input onChange={handleFileUpload} type="file" id="files" name="files" className="hidden" accept="image/*" multiple />
                     {/* display files */}
                     <div className="mt-4">
                         {
-                            filePreview.map((file, index) => {
+                            files.preview.map((file, index) => {
                                 return <div key={file.name + index} className="flex items-center my-2">
                                     <a href={file.url} className="flex items-center border-r flex-1 mr-2 pr-4" target='_blank' rel="noreferrer">
                                         <div className="h-6 w-6 relative">
@@ -136,7 +130,7 @@ const NewPostForm = ({ handleFormSubmit }: Props) => {
                                             {file.name}
                                         </div>
                                         <div className="ml-auto">
-                                            {file.size} kb
+                                            {formatSizeUnits(file.size)}
                                         </div>
                                     </a>
                                     <div className="flex items-center" >
@@ -150,8 +144,11 @@ const NewPostForm = ({ handleFormSubmit }: Props) => {
                     </div>
                 </div>
                 {/* buttons */}
-                <div className="my-2">
-                    <Button type="submit" className="text-xs block ml-auto bg-primary-100 text-white hover:bg-opacity-95  ">
+                <div className="my-2 flex items-center justify-end">
+                    <button type="button" className="mx-3 text-sm text-gray-700" onClick={clearForm}>
+                        clear
+                    </button>
+                    <Button type="submit" className="text-xs block bg-primary-100 text-white hover:bg-opacity-95  ">
                         Post update
                     </Button>
                 </div>
