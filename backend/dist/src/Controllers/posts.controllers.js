@@ -25,12 +25,12 @@ const addNewPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         };
         post.text = ((_l = req.body) === null || _l === void 0 ? void 0 : _l.text) || "";
         const files = req.files;
-        const promises = files.map((fileData) => {
-            client.updateSettings({ publicKey: "73b34fb69e9fb0ddfed7", fileName: fileData.originalname });
-            return client.uploadFile(fileData.buffer).then((file) => file.cdnUrl);
-        });
-        const files_urls = yield Promise.all(promises);
-        post.images = files_urls || [];
+        // const promises = files.map((fileData) => {
+        // 	client.updateSettings({ publicKey: "73b34fb69e9fb0ddfed7", fileName: fileData.originalname });
+        // 	return client.uploadFile(fileData.buffer).then((file) => file.cdnUrl);
+        // });
+        // const files_urls: (string | null)[] = await Promise.all(promises);
+        // post.images = (files_urls as string[]) || [];
         let tmp_url = "";
         if (post.text) {
             tmp_url = post.text

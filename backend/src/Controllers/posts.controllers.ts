@@ -28,12 +28,12 @@ const addNewPost = async (req: RequestFile, res: Response): Promise<void> => {
 
 		const files = req.files;
 
-		const promises = files.map((fileData) => {
-			client.updateSettings({ publicKey: "73b34fb69e9fb0ddfed7", fileName: fileData.originalname });
-			return client.uploadFile(fileData.buffer).then((file) => file.cdnUrl);
-		});
-		const files_urls: (string | null)[] = await Promise.all(promises);
-		post.images = (files_urls as string[]) || [];
+		// const promises = files.map((fileData) => {
+		// 	client.updateSettings({ publicKey: "73b34fb69e9fb0ddfed7", fileName: fileData.originalname });
+		// 	return client.uploadFile(fileData.buffer).then((file) => file.cdnUrl);
+		// });
+		// const files_urls: (string | null)[] = await Promise.all(promises);
+		// post.images = (files_urls as string[]) || [];
 
 		let tmp_url: string = "";
 		if (post.text) {
