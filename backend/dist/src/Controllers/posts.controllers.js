@@ -16,6 +16,7 @@ const addNewPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
     try {
         const post = new post_model_1.Post();
+        console.log(req.body);
         post.author = {
             _id: (_b = (_a = req.body) === null || _a === void 0 ? void 0 : _a.user) === null || _b === void 0 ? void 0 : _b._id,
             avatar: ((_d = (_c = req.body) === null || _c === void 0 ? void 0 : _c.user) === null || _d === void 0 ? void 0 : _d.avatar) || "",

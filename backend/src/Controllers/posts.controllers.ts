@@ -17,6 +17,7 @@ const client = new UploadClient({ publicKey: "73b34fb69e9fb0ddfed7" });
 const addNewPost = async (req: RequestFile, res: Response): Promise<void> => {
 	try {
 		const post = new Post();
+		console.log(req.body);
 		post.author = {
 			_id: req.body?.user?._id,
 			avatar: req.body?.user?.avatar || "",
