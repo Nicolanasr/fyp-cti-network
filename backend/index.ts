@@ -15,7 +15,12 @@ const db = process.env.MONGO_URI;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors({ credentials: true, origin: ["http://localhost:3000", "http://127.0.0.1:3000", "https://fyp-cti-network.vercel.app"] }));
+app.use(
+	cors({
+		credentials: true,
+		origin: ["http://localhost:3000", "http://127.0.0.1:3000", "http://192.168.2.125:3000", "https://fyp-cti-network.vercel.app"],
+	})
+);
 
 var usersRouter = require("./src/Routes/users.routes");
 var postsRouter = require("./src/Routes/posts.routes");

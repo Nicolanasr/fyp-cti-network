@@ -27,7 +27,7 @@ const Login: NextPage = (props: Props) => {
                 withCredentials: true
             }).then((res) => {
                 if (postedData.remember) {
-                    document.cookie = `token=${res.data?.tokens?.token}; SameSite= None; Secure=true; expires=${new Date(res.data?.tokens?.expires)}; `;
+                    document.cookie = `token=${res.data?.tokens?.token}; SameSite= None; expires=${new Date(res.data?.tokens?.expires)}; `;
                 }
                 user.setAuthState(res.data.data)
                 router.push("/home");
