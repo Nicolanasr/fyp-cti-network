@@ -23,28 +23,31 @@ export interface IUser {
 	created_at?: Date;
 }
 
-const userSchema = new Schema<IUser>({
-	first_name: { type: String, required: true },
-	last_name: { type: String },
-	email: {
-		type: String,
-		trim: true,
-		lowercase: true,
-		unique: true,
-		required: true,
-		validate: [validateEmail, "Please fill a valid email address"],
-		match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, "Please fill a valid email address"],
+const userSchema = new Schema<IUser>(
+	{
+		first_name: { type: String, required: true },
+		last_name: { type: String },
+		email: {
+			type: String,
+			trim: true,
+			lowercase: true,
+			unique: true,
+			required: true,
+			validate: [validateEmail, "Please fill a valid email address"],
+			match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, "Please fill a valid email address"],
+		},
+		username: { type: String, required: true, minlength: 4, unique: true },
+		password: {
+			type: String,
+			minlength: 8,
+			required: true,
+		},
+		avatar: { type: String, default: "https://ucarecdn.com/ee1899bc-a0b2-425a-8736-9c5eec803aa2/profileimgplaceholder.png" },
+		is_verified: { type: Boolean, default: false },
+		user_type: { type: Schema.Types.String, enum: UserType, default: UserType.MEMBER, required: true },
+		created_at: { type: Date, default: () => Date.now() },
 	},
-	username: { type: String, required: true, minlength: 4, unique: true },
-	password: {
-		type: String,
-		minlength: 8,
-		required: true,
-	},
-	avatar: String,
-	is_verified: { type: Boolean, default: false },
-	user_type: { type: Schema.Types.String, enum: UserType, default: UserType.MEMBER, required: true },
-	created_at: { type: Date, default: () => Date.now() },
-});
+	{ timestamps: true }
+);
 
 export const User = model<IUser>("User", userSchema);

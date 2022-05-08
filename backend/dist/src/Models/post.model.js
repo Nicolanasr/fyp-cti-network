@@ -26,12 +26,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Post = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const postSchema = new mongoose_1.Schema({
-    author: { type: {}, required: "Author is required" },
+    author: { type: mongoose_1.default.Schema.Types.ObjectId, required: true, ref: "User" },
     created_at: { type: Date, required: true, default: Date.now },
     text: { type: String, trim: true, default: "" },
     images: { type: [String], default: [] },
     url: { type: String, required: true, trim: true, unique: true },
     likes: { type: [{ user_id: mongoose_1.default.Schema.Types.ObjectId }], default: [] },
     comments: { type: [{ user_id: mongoose_1.default.Schema.Types.ObjectId, text: String, created_at: Date }], default: [] },
-});
+}, { timestamps: true });
 exports.Post = (0, mongoose_1.model)("Post", postSchema);

@@ -11,20 +11,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const upload_client_1 = require("@uploadcare/upload-client");
 const post_model_1 = require("../Models/post.model");
+const user_model_1 = require("../Models/user.model");
 const client = new upload_client_1.UploadClient({ publicKey: "73b34fb69e9fb0ddfed7" });
 const addNewPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+    var _a, _b, _c;
     try {
         const post = new post_model_1.Post();
-        console.log(req.body);
-        post.author = {
-            _id: (_b = (_a = req.body) === null || _a === void 0 ? void 0 : _a.user) === null || _b === void 0 ? void 0 : _b._id,
-            avatar: ((_d = (_c = req.body) === null || _c === void 0 ? void 0 : _c.user) === null || _d === void 0 ? void 0 : _d.avatar) || "",
-            first_name: (_f = (_e = req.body) === null || _e === void 0 ? void 0 : _e.user) === null || _f === void 0 ? void 0 : _f.first_name,
-            last_name: (_h = (_g = req.body) === null || _g === void 0 ? void 0 : _g.user) === null || _h === void 0 ? void 0 : _h.last_name,
-            username: (_k = (_j = req.body) === null || _j === void 0 ? void 0 : _j.user) === null || _k === void 0 ? void 0 : _k.username,
-        };
-        post.text = ((_l = req.body) === null || _l === void 0 ? void 0 : _l.text) || "";
+        const author = yield user_model_1.User.findById((_b = (_a = req.body) === null || _a === void 0 ? void 0 : _a.user) === null || _b === void 0 ? void 0 : _b._id);
+        post.author = author === null || author === void 0 ? void 0 : author.id;
+        post.text = ((_c = req.body) === null || _c === void 0 ? void 0 : _c.text) || "";
         const files = req.files;
         const promises = files.map((fileData) => {
             client.updateSettings({ publicKey: "73b34fb69e9fb0ddfed7", fileName: fileData.originalname });
@@ -56,9 +51,13 @@ const addNewPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         });
         post.url = tmp_url;
         post.save()
-            .then(() => {
-            res.status(201).json({ success: true, message: "Post created successfully", data: post });
-        })
+            .then((saved_post) => __awaiter(void 0, void 0, void 0, function* () {
+            const sendPost = yield saved_post.populate({
+                path: "author",
+                select: "-password",
+            });
+            res.status(201).json({ success: true, message: "Post created successfully", data: sendPost });
+        }))
             .catch((err) => {
             if (err.code === 11000) {
                 res.status(400).json({ success: false, message: `already exist`, data: err.keyValue });
@@ -76,6 +75,10 @@ const addNewPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 const getLastestPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let posts = yield post_model_1.Post.find({})
+            .populate({
+            path: "author",
+            select: "-password",
+        })
             .sort({ created_at: -1 })
             .limit(20)
             .then((allPosts) => {
@@ -104,10 +107,10 @@ const getLastestPosts = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 const likePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _m, _o, _p;
+    var _d, _e, _f;
     try {
-        const post_id = (_m = req.body) === null || _m === void 0 ? void 0 : _m.post_id;
-        const user_id = (_p = (_o = req.body) === null || _o === void 0 ? void 0 : _o.user) === null || _p === void 0 ? void 0 : _p._id;
+        const post_id = (_d = req.body) === null || _d === void 0 ? void 0 : _d.post_id;
+        const user_id = (_f = (_e = req.body) === null || _e === void 0 ? void 0 : _e.user) === null || _f === void 0 ? void 0 : _f._id;
         post_model_1.Post.findOne({ _id: post_id })
             .then((post_res) => {
             var _a, _b, _c, _d, _e;

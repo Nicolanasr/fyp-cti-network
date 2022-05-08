@@ -47,6 +47,7 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 		await User.findOne({ email: email })
 			.then((existUser) => {
 				if (existUser) {
+					console.log(existUser);
 					bcrypt.compare(password, existUser.password, (bErr: any, bRes: any) => {
 						if (!bErr && bRes) {
 							jwt.sign(

@@ -2,6 +2,7 @@ import { Request, response, Response } from "express";
 import { UploadClient } from "@uploadcare/upload-client";
 
 import { Post, IPost } from "../Models/post.model";
+import { User } from "../Models/user.model";
 import { MulterFile } from "../../types/multerFile";
 
 interface IPostData extends IPost {
@@ -17,14 +18,9 @@ const client = new UploadClient({ publicKey: "73b34fb69e9fb0ddfed7" });
 const addNewPost = async (req: RequestFile, res: Response): Promise<void> => {
 	try {
 		const post = new Post();
-		console.log(req.body);
-		post.author = {
-			_id: req.body?.user?._id,
-			avatar: req.body?.user?.avatar || "",
-			first_name: req.body?.user?.first_name,
-			last_name: req.body?.user?.last_name,
-			username: req.body?.user?.username,
-		};
+		const author = await User.findById(req.body?.user?._id);
+		post.author = author?.id;
+
 		post.text = req.body?.text || "";
 
 		const files = req.files;
@@ -62,8 +58,12 @@ const addNewPost = async (req: RequestFile, res: Response): Promise<void> => {
 		post.url = tmp_url;
 
 		post.save()
-			.then(() => {
-				res.status(201).json({ success: true, message: "Post created successfully", data: post });
+			.then(async (saved_post) => {
+				const sendPost = await saved_post.populate({
+					path: "author",
+					select: "-password",
+				});
+				res.status(201).json({ success: true, message: "Post created successfully", data: sendPost });
 			})
 			.catch((err) => {
 				if (err.code === 11000) {
@@ -81,6 +81,10 @@ const addNewPost = async (req: RequestFile, res: Response): Promise<void> => {
 const getLastestPosts = async (req: Request, res: Response): Promise<void> => {
 	try {
 		let posts: IPostData[] = await Post.find({})
+			.populate({
+				path: "author",
+				select: "-password",
+			})
 			.sort({ created_at: -1 })
 			.limit(20)
 			.then((allPosts) => {

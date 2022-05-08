@@ -30,9 +30,9 @@ const userSchema = new mongoose_1.Schema({
         minlength: 8,
         required: true,
     },
-    avatar: String,
+    avatar: { type: String, default: "https://ucarecdn.com/ee1899bc-a0b2-425a-8736-9c5eec803aa2/profileimgplaceholder.png" },
     is_verified: { type: Boolean, default: false },
     user_type: { type: mongoose_1.Schema.Types.String, enum: UserType, default: UserType.MEMBER, required: true },
     created_at: { type: Date, default: () => Date.now() },
-});
+}, { timestamps: true });
 exports.User = (0, mongoose_1.model)("User", userSchema);
