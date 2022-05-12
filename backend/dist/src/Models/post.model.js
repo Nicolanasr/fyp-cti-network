@@ -32,6 +32,16 @@ const postSchema = new mongoose_1.Schema({
     images: { type: [String], default: [] },
     url: { type: String, required: true, trim: true, unique: true },
     likes: { type: [{ user_id: mongoose_1.default.Schema.Types.ObjectId }], default: [] },
-    comments: { type: [{ user_id: mongoose_1.default.Schema.Types.ObjectId, text: String, created_at: Date }], default: [] },
+    comments: {
+        type: [
+            {
+                user: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "User", required: true },
+                text: String,
+                createdAt: { type: Date, default: Date.now, required: false },
+            },
+            { timestamps: true },
+        ],
+        default: [],
+    },
 }, { timestamps: true });
 exports.Post = (0, mongoose_1.model)("Post", postSchema);

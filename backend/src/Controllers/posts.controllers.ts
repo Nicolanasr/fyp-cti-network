@@ -85,8 +85,12 @@ const getLastestPosts = async (req: Request, res: Response): Promise<void> => {
 				path: "author",
 				select: "-password",
 			})
-			.sort({ created_at: -1 })
+			.populate({
+				path: "comments.user",
+				select: "-password",
+			})
 			.limit(20)
+			.sort({ createdAt: -1 })
 			.then((allPosts) => {
 				return allPosts.map((post: IPost) => {
 					let tmp_post: IPostData = JSON.parse(JSON.stringify(post));
@@ -150,8 +154,85 @@ const likePost = async (req: Request, res: Response): Promise<void> => {
 	}
 };
 
+const getPostBySlug = async (req: Request, res: Response): Promise<void> => {
+	try {
+		await Post.findOne({ url: req.params.post_slug })
+			.populate({
+				path: "author",
+				select: "-password",
+			})
+			.populate({
+				path: "comments.user",
+				select: "-password",
+			})
+			.then((post) => {
+				if (post) {
+					let tmp_post: IPostData = JSON.parse(JSON.stringify(post));
+					tmp_post["liked_by_user"] = false;
+
+					post.likes?.forEach((like) => {
+						if (like.user_id.toString() === req.body?.user?._id) {
+							tmp_post["liked_by_user"] = true;
+							return tmp_post;
+						}
+					});
+					res.status(200).json({ success: true, data: tmp_post });
+				} else {
+					res.status(404).json({ success: false, data: "post not found" });
+				}
+			})
+			.catch((err) => {
+				const errorMessage: string = JSON.parse(JSON.stringify(err.message));
+				throw new Error(errorMessage);
+			});
+	} catch (err) {
+		res.status(500).json({ success: false, message: `server error -- ${err}` });
+	}
+};
+
+const postComment = async (req: Request, res: Response): Promise<void> => {
+	try {
+		const post_id = req.body?.post_id;
+		const user_id = req.body?.user?._id;
+		const comment: string = req.body?.comment;
+
+		Post.findById(post_id)
+			.populate({
+				path: "comments.user",
+				select: "-password",
+			})
+			.then(async (post_res) => {
+				if (post_res) {
+					post_res.comments?.push({ user: user_id, text: comment, createdAt: new Date() });
+					let postWithComment = await post_res.populate({
+						path: "comments.user",
+						select: "-password",
+					});
+					const allComments = postWithComment.comments?.sort((a, b) => {
+						return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+					});
+
+					post_res.comments = allComments;
+					post_res.save();
+
+					res.status(200).json({ success: true, message: "comment posted successfully!", data: allComments });
+				} else {
+					res.status(404).json({ success: false, message: "Post does not exist!" });
+				}
+			})
+			.catch((err) => {
+				const errorMessage: string = JSON.parse(JSON.stringify(err.message));
+				throw new Error(errorMessage);
+			});
+	} catch (err) {
+		res.status(500).json({ success: false, message: `server error -- ${err}` });
+	}
+};
+
 module.exports = {
 	addNewPost,
 	getLastestPosts,
 	likePost,
+	getPostBySlug,
+	postComment,
 };

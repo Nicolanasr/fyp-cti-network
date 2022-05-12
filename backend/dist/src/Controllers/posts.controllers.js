@@ -79,8 +79,12 @@ const getLastestPosts = (req, res) => __awaiter(void 0, void 0, void 0, function
             path: "author",
             select: "-password",
         })
-            .sort({ created_at: -1 })
+            .populate({
+            path: "comments.user",
+            select: "-password",
+        })
             .limit(20)
+            .sort({ createdAt: -1 })
             .then((allPosts) => {
             return allPosts.map((post) => {
                 var _a;
@@ -147,8 +151,87 @@ const likePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(500).json({ success: false, message: `server error -- ${err}` });
     }
 });
+const getPostBySlug = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield post_model_1.Post.findOne({ url: req.params.post_slug })
+            .populate({
+            path: "author",
+            select: "-password",
+        })
+            .populate({
+            path: "comments.user",
+            select: "-password",
+        })
+            .then((post) => {
+            var _a;
+            if (post) {
+                let tmp_post = JSON.parse(JSON.stringify(post));
+                tmp_post["liked_by_user"] = false;
+                (_a = post.likes) === null || _a === void 0 ? void 0 : _a.forEach((like) => {
+                    var _a, _b;
+                    if (like.user_id.toString() === ((_b = (_a = req.body) === null || _a === void 0 ? void 0 : _a.user) === null || _b === void 0 ? void 0 : _b._id)) {
+                        tmp_post["liked_by_user"] = true;
+                        return tmp_post;
+                    }
+                });
+                res.status(200).json({ success: true, data: tmp_post });
+            }
+            else {
+                res.status(404).json({ success: false, data: "post not found" });
+            }
+        })
+            .catch((err) => {
+            const errorMessage = JSON.parse(JSON.stringify(err.message));
+            throw new Error(errorMessage);
+        });
+    }
+    catch (err) {
+        res.status(500).json({ success: false, message: `server error -- ${err}` });
+    }
+});
+const postComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _g, _h, _j, _k;
+    try {
+        const post_id = (_g = req.body) === null || _g === void 0 ? void 0 : _g.post_id;
+        const user_id = (_j = (_h = req.body) === null || _h === void 0 ? void 0 : _h.user) === null || _j === void 0 ? void 0 : _j._id;
+        const comment = (_k = req.body) === null || _k === void 0 ? void 0 : _k.comment;
+        post_model_1.Post.findById(post_id)
+            .populate({
+            path: "comments.user",
+            select: "-password",
+        })
+            .then((post_res) => __awaiter(void 0, void 0, void 0, function* () {
+            var _l, _m;
+            if (post_res) {
+                (_l = post_res.comments) === null || _l === void 0 ? void 0 : _l.push({ user: user_id, text: comment, createdAt: new Date() });
+                let postWithComment = yield post_res.populate({
+                    path: "comments.user",
+                    select: "-password",
+                });
+                const allComments = (_m = postWithComment.comments) === null || _m === void 0 ? void 0 : _m.sort((a, b) => {
+                    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                });
+                post_res.comments = allComments;
+                post_res.save();
+                res.status(200).json({ success: true, message: "comment posted successfully!", data: allComments });
+            }
+            else {
+                res.status(404).json({ success: false, message: "Post does not exist!" });
+            }
+        }))
+            .catch((err) => {
+            const errorMessage = JSON.parse(JSON.stringify(err.message));
+            throw new Error(errorMessage);
+        });
+    }
+    catch (err) {
+        res.status(500).json({ success: false, message: `server error -- ${err}` });
+    }
+});
 module.exports = {
     addNewPost,
     getLastestPosts,
     likePost,
+    getPostBySlug,
+    postComment,
 };

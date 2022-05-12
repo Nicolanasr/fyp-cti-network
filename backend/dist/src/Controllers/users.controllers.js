@@ -57,7 +57,6 @@ const signin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         yield user_model_1.User.findOne({ email: email })
             .then((existUser) => {
             if (existUser) {
-                console.log(existUser);
                 bcrypt.compare(password, existUser.password, (bErr, bRes) => {
                     if (!bErr && bRes) {
                         jwt.sign(existUser.toJSON(), process.env.jwtSecret, { expiresIn: process.env.tokenExp + "s" }, (jwtErr, jwtToken) => {

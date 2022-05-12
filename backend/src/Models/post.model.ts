@@ -13,7 +13,7 @@ export interface IPost {
 	images?: string[];
 	url?: string;
 	likes?: { user_id: mongoose.Schema.Types.ObjectId }[];
-	comments?: { user_id: mongoose.Schema.Types.ObjectId; text: String; created_at: Date }[];
+	comments?: { user: mongoose.Schema.Types.ObjectId; text: String; createdAt: Date }[];
 }
 
 const postSchema = new Schema<IPost>(
@@ -24,7 +24,17 @@ const postSchema = new Schema<IPost>(
 		images: { type: [String], default: [] },
 		url: { type: String, required: true, trim: true, unique: true },
 		likes: { type: [{ user_id: mongoose.Schema.Types.ObjectId }], default: [] },
-		comments: { type: [{ user_id: mongoose.Schema.Types.ObjectId, text: String, created_at: Date }], default: [] },
+		comments: {
+			type: [
+				{
+					user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+					text: String,
+					createdAt: { type: Date, default: Date.now, required: false },
+				},
+				{ timestamps: true },
+			],
+			default: [],
+		},
 	},
 	{ timestamps: true }
 );

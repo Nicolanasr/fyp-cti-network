@@ -25,7 +25,6 @@ const verifyToken = (req, res, next) => {
             if (!user_data) {
                 return res.status(404).json({ success: false, message: "User not found" });
             }
-            console.log(user_data);
             req.body.user = JSON.parse(JSON.stringify(user_data));
             next();
         }));
