@@ -1,23 +1,23 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import Image from "next/image"
 import Link from "next/link"
 
 import axios from '../../utils/axios'
 import { getCookie } from '../../utils/functions'
 
-import { IPost } from '../../types/post'
+import { IComment, IPost } from '../../types/post'
 
 import { timeSince } from "../../utils/functions"
 
-export interface Comment {
-    comment_author: string,
-    comment_text: string,
-    posted_date: Date,
-    likes_count: number,
-    replies?: Comment[]
+import Button from '../ui/shared/Button/Button'
+import { IUser } from '../../types/user'
+
+
+interface IPostProps extends IPost {
+    withDetails?: boolean
 }
 
-const Post = ({ _id, author, comments, created_at, images, likes, text, liked_by_user, url }: IPost) => {
+const Post = ({ _id, author, comments, created_at, images, likes, text, liked_by_user, url, withDetails }: IPostProps) => {
     const [readMoreText, setReadMoreText] = useState<boolean>(false)
     const [userLiked, setUserLiked] = useState<{ liked: boolean, total_likes: number }>(
         {
@@ -25,6 +25,9 @@ const Post = ({ _id, author, comments, created_at, images, likes, text, liked_by
             total_likes: likes ? likes.length : 0
         }
     )
+    const [allComments, setAllComments] = useState<IComment[] | undefined>(comments)
+
+    const [commentForm, setCommentForm] = useState<boolean>(false)
 
     const postLikeHandler = async () => {
         try {
@@ -55,6 +58,35 @@ const Post = ({ _id, author, comments, created_at, images, likes, text, liked_by
     const handleReadMore = () => {
         setReadMoreText((p) => !p);
         return false;
+    }
+
+    const commentRef = useRef<HTMLInputElement | null>(null);
+
+    const handleCommentSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        await axios({
+            url: `/post/comment`,
+            method: "POST",
+            withCredentials: true,
+            data: {
+                comment: commentRef.current?.value,
+                post_id: _id
+            },
+            headers: {
+                "Authorization": `Bearer ${getCookie("token")}`,
+            },
+        }).then((res) => {
+            if (res.data.success === true) {
+                setAllComments(res.data.data)
+            }
+        })
+            .catch((err) => {
+                console.error(err)
+            })
+
+        if (commentRef.current) {
+            commentRef.current.value = ""
+        }
     }
 
     return (
@@ -89,57 +121,56 @@ const Post = ({ _id, author, comments, created_at, images, likes, text, liked_by
                     </button>
                 </div>
                 {/* post content */}
-                <a
-                    href={`/post/${url}`}
-                    className="w-full cursor-pointer" >
-                    <p className="my-4 whitespace-pre-wrap">
-                        {
-                            text && text.length > 170 && !readMoreText ?
-                                <>
-                                    {text.substring(0, 170) + "... "}
-                                    <span className="text-secondary-100 z-10 cursor-pointer relative"
-                                        onClick={(e) => { handleReadMore(); e.preventDefault(); return false }}>
-                                        read more
-                                    </span>
-                                </>
-                                : <>
-                                    {text}
-                                    {
-                                        text && text?.length > 170 &&
-                                        <>
-                                            <br />
-                                            <span className="text-secondary-100 z-10 cursor-pointer"
-                                                onClick={(e) => { handleReadMore(); e.preventDefault(); return false }}>
-                                                show less
-                                            </span>
-                                        </>
-                                    }
-                                </>
-                        }
-                    </p>
-                    {
-                        images && images.length > 0 &&
-                        <div className={`aspect-square max-w-xl my-2 grid gap-2 rounded-xl shadow overflow-hidden ${images.length === 1 ? "grid-cols-1" : images.length >= 2 ? "grid-cols-2" : ""}`}>
+                <Link href={`/post/${url}`} >
+                    <a
+                        className="w-full cursor-pointer" >
+                        <p className="my-4 whitespace-pre-wrap">
                             {
-                                images.map((image, img_index) => (
-                                    img_index < 4 &&
-                                    <div key={image + img_index} className="h-full w-full relative">
-                                        {/*  eslint-disable-next-line @next/next/no-img-element */}
-                                        <img src={`${image}-/preview/-/quality/lightest/`} className="h-full w-full absolute top-0 bottom-0 left-0 right-0 object-cover" alt={"post image " + image} />
+                                text && text.length > 170 && !readMoreText ?
+                                    <>
+                                        {text.substring(0, 170) + "... "}
+                                        <span className="text-secondary-100 z-10 cursor-pointer relative"
+                                            onClick={(e) => { handleReadMore(); e.preventDefault(); return false }}>
+                                            read more
+                                        </span>
+                                    </>
+                                    : <>
+                                        {text}
                                         {
-                                            images.length > 4 && img_index === 3 && <div className="bg-black bg-opacity-50 text-white absolute top-0 bottom-0 left-0 right-0 z-10 flex items-center justify-center">
-                                                + {images.length - 4} more
-                                            </div>
+                                            text && text?.length > 170 &&
+                                            <>
+                                                <br />
+                                                <span className="text-secondary-100 z-10 cursor-pointer"
+                                                    onClick={(e) => { handleReadMore(); e.preventDefault(); return false }}>
+                                                    show less
+                                                </span>
+                                            </>
                                         }
-                                    </div>
-                                ))
+                                    </>
                             }
+                        </p>
+                        {
+                            images && images.length > 0 &&
+                            <div className={`aspect-square max-w-xl my-2 grid gap-2 rounded-xl shadow overflow-hidden ${images.length === 1 ? "grid-cols-1" : images.length >= 2 ? "grid-cols-2" : ""}`}>
+                                {
+                                    images.map((image, img_index) => (
+                                        img_index < 4 &&
+                                        <div key={image + img_index} className="h-full w-full relative">
+                                            {/*  eslint-disable-next-line @next/next/no-img-element */}
+                                            <img src={`${image}-/preview/-/quality/lightest/`} className="h-full w-full absolute top-0 bottom-0 left-0 right-0 object-cover" alt={"post image " + image} />
+                                            {
+                                                images.length > 4 && img_index === 3 && <div className="bg-black bg-opacity-50 text-white absolute top-0 bottom-0 left-0 right-0 z-10 flex items-center justify-center">
+                                                    + {images.length - 4} more
+                                                </div>
+                                            }
+                                        </div>
+                                    ))
+                                }
 
-                        </div>
-                    }
-                </a>
-                {/*</a >
-                </Link > */}
+                            </div>
+                        }
+                    </a>
+                </Link>
 
                 {/* post actions bar */}
                 <div className="my-3 py-3 border-y flex gap-4 text-sm">
@@ -157,11 +188,11 @@ const Post = ({ _id, author, comments, created_at, images, likes, text, liked_by
 
                     </button>
                     {/* comment */}
-                    <button className="flex items-center">
-                        <span className="mx-2 ">Comment</span>
+                    <button className="flex items-center" onClick={() => setCommentForm(true)}>
+                        <span className="mx-2 " >Comment</span>
                         {
-                            comments &&
-                            <span className={`px-2 text-xs text-gray-500 bg-gray-100 rounded-full`}>{comments.length}</span>
+                            allComments &&
+                            <span className={`px-2 text-xs text-gray-500 bg-gray-100 rounded-full`}>{allComments.length}</span>
                         }
                     </button>
                     {/* share */}
@@ -173,7 +204,31 @@ const Post = ({ _id, author, comments, created_at, images, likes, text, liked_by
                 {/* post comment */}
                 <div className="w-full">
                     {
-                        comments && comments?.length > 0 ? <></>
+                        commentForm && <form className={`w-full`} onSubmit={handleCommentSubmit}>
+                            <input ref={commentRef} type="text" placeholder="Write your comment..." className="w-full p-2 px-4 focus:outline-none text-sm border rounded-full" required />
+                            <div className="my-2 flex items-center justify-end">
+                                <button type="button" className="mx-3 text-sm text-gray-700" onClick={() => {
+                                    setCommentForm(false)
+                                }}>
+                                    Cancel
+                                </button>
+                                <Button type="submit" className="text-xs block bg-primary-100 text-white hover:bg-opacity-95  ">
+                                    Post
+                                </Button>
+                            </div>
+                        </form>
+                    }
+                    {
+                        allComments && allComments.length > 0 ? <div>
+                            {
+                                allComments.map((comment, comment_index) => (
+                                    (comment_index < 5 || withDetails) &&
+                                    <div key={comment._id}>
+                                        {comment.user.first_name} : {comment.text}
+                                    </div>
+                                ))
+                            }
+                        </div>
                             :
                             <>No comments</>
                     }

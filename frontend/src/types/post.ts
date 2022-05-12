@@ -12,10 +12,13 @@ export interface IPost {
     images?: string[];
     url?: string;
     likes?: { user_id: string }[];
-    comments?: {
-        user_id: string;
-        text: String;
-        created_at: Date;
-    }[];
+    comments?: IComment[];
     liked_by_user?: boolean;
+}
+
+export interface IComment {
+    _id: string;
+    user: IUser;
+    text: String;
+    created_at: Date;
 }
